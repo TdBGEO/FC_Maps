@@ -33,9 +33,14 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
     h.strip()
-    for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    for h in os.environ.get(
+        "DJANGO_ALLOWED_HOSTS",
+        "localhost,127.0.0.1"
+    ).split(",")
     if h.strip()
 ]
+# Always allow Railway's healthcheck + any railway.app subdomain
+ALLOWED_HOSTS += ["healthcheck.railway.app", ".railway.app"]
 
 # Trust Railway's HTTPS proxy
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
