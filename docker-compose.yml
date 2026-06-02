@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgis/postgis:15-3.3
+    container_name: football_map_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-football}
+      POSTGRES_USER: ${DB_USER:-football}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-Otrabanda3}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgis_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-football} -d ${DB_NAME:-football}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgis_data:
