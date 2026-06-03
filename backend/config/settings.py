@@ -192,7 +192,7 @@ CORS_ALLOWED_ORIGINS = [
 # ---------------------------------------------------------------------------
 # Security headers in production
 # ---------------------------------------------------------------------------
-if not DEBUG
+if not DEBUG:
     SECURE_SSL_REDIRECT = True
     # Exempt healthcheck — Railway probes use plain HTTP
     SECURE_REDIRECT_EXEMPT = [r"^api/health/?$"]
