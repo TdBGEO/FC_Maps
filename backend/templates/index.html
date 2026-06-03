@@ -6,7 +6,6 @@
   <title>FC Maps — World Cup 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- Official WC 2026 uses a custom font called 'Hines'. Closest free Google Font is "Anton" + "Inter" for body -->
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
@@ -18,6 +17,7 @@
       --rule:    rgba(26,26,26,.12);
       --muted:   #999;
       --shadow:  0 2px 16px rgba(26,26,26,.10);
+      --shadow-lg: 0 8px 32px rgba(26,26,26,.18);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,7 +29,6 @@
       color: var(--ink);
     }
 
-    /* ── Display headings use Anton (WC-style condensed) ─────────────── */
     .display {
       font-family: 'Anton', sans-serif;
       letter-spacing: .04em;
@@ -42,22 +41,29 @@
       z-index: 0;
     }
 
-    /* ── Filter panel (top-left) ───────────────────────────────────────── */
-    #filters {
+    /* ── Left sidebar (filters + stats + country) ──────────────────── */
+    #sidebar {
       position: fixed;
       top: 12px;
       left: 60px;
+      bottom: 64px;
       z-index: 800;
+      width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+    }
+
+    .panel {
       background: var(--white);
       border: 1px solid var(--rule);
       border-radius: 4px;
       box-shadow: var(--shadow);
       padding: 14px 18px;
-      min-width: 260px;
-      max-width: 320px;
     }
 
-    #filters .filter-head {
+    .panel-head {
       display: flex;
       align-items: center;
       gap: 8px;
@@ -65,19 +71,64 @@
       padding-bottom: 10px;
       border-bottom: 2px solid var(--orange);
     }
-    #filters .filter-head strong {
+    .panel-head strong {
       font-family: 'Anton', sans-serif;
       font-size: 1rem;
       letter-spacing: .1em;
     }
-    #filters .filter-head .meta {
+    .panel-head .meta {
       margin-left: auto;
       font-size: .65rem;
       color: var(--muted);
       text-transform: uppercase;
       letter-spacing: .08em;
     }
+    .panel-head .close-btn {
+      margin-left: auto;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1;
+      background: none;
+      border: none;
+      padding: 0 4px;
+    }
+    .panel-head .close-btn:hover { color: var(--orange); }
 
+    /* ── Search bar ──────────────────────────────────────────────────── */
+    .search-wrap {
+      position: relative;
+      margin-bottom: 12px;
+    }
+    .search-wrap input {
+      width: 100%;
+      font-family: 'Inter', sans-serif;
+      font-size: .85rem;
+      color: var(--ink);
+      background: transparent;
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      padding: 7px 28px 7px 10px;
+      transition: border-color .15s;
+    }
+    .search-wrap input:focus {
+      outline: none;
+      border-color: var(--orange);
+    }
+    .search-wrap input::placeholder {
+      color: var(--muted);
+    }
+    .search-wrap .search-icon {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+      font-size: .85rem;
+    }
+
+    /* ── Filter rows ─────────────────────────────────────────────────── */
     .filter-row { margin-bottom: 8px; }
     .filter-row:last-child { margin-bottom: 0; }
 
@@ -121,7 +172,6 @@
       cursor: not-allowed;
     }
 
-    /* Slight indent for child filter to show hierarchy */
     .filter-row.child {
       padding-left: 12px;
       border-left: 2px solid var(--rule);
@@ -168,6 +218,85 @@
     }
     .reset-btn:hover { color: var(--orange); }
 
+    /* ── Stats panel ─────────────────────────────────────────────────── */
+    #stats-panel { display: none; }
+    #stats-panel.visible { display: block; }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: .78rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-row .stat-label {
+      color: var(--muted);
+      text-transform: uppercase;
+      font-size: .62rem;
+      letter-spacing: .06em;
+      padding-top: 2px;
+    }
+    .stat-row .stat-value {
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .stat-bullets {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 2px solid var(--orange);
+    }
+    .stat-bullets .stat-head {
+      font-family: 'Anton', sans-serif;
+      font-size: .75rem;
+      letter-spacing: .1em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .stat-bullets div {
+      display: flex;
+      justify-content: space-between;
+      font-size: .76rem;
+      padding: 2px 0;
+    }
+    .stat-bullets .count {
+      color: var(--orange);
+      font-weight: 600;
+    }
+
+    /* ── Country panel (slides in when country filter active) ───────── */
+    #country-panel { display: none; }
+    #country-panel.visible { display: block; }
+
+    .country-display {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 4px 0;
+    }
+    .country-flag-big {
+      width: 48px;
+      height: 36px;
+      object-fit: cover;
+      border: 1px solid var(--rule);
+      flex-shrink: 0;
+    }
+    .country-info .country-name {
+      font-family: 'Anton', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+    .country-info .country-iso {
+      font-size: .65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-top: 4px;
+    }
+
     /* ── Bottom brand strip ────────────────────────────────────────────── */
     #panel {
       position: fixed;
@@ -179,7 +308,6 @@
       background: var(--white);
       border-top: 3px solid var(--orange);
       box-shadow: 0 -2px 20px rgba(26,26,26,.08);
-      pointer-events: none;
     }
     #panel .brand {
       display: flex;
@@ -219,6 +347,23 @@
       color: var(--orange);
     }
 
+    #panel .about-link {
+      margin-left: auto;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      background: none;
+      border: none;
+      border-left: 1px solid var(--rule);
+      font-family: 'Anton', sans-serif;
+      font-size: .85rem;
+      letter-spacing: .12em;
+      color: var(--ink);
+      text-transform: uppercase;
+    }
+    #panel .about-link:hover { color: var(--orange); }
+
     /* ── Leaflet controls ──────────────────────────────────────────────── */
     .leaflet-top.leaflet-left { top: 12px; }
     .leaflet-bottom.leaflet-right { bottom: 60px; }
@@ -245,7 +390,7 @@
     /* ── Popup ─────────────────────────────────────────────────────────── */
     .leaflet-popup-content-wrapper {
       border-radius: 4px !important;
-      box-shadow: 0 8px 32px rgba(26,26,26,.14) !important;
+      box-shadow: var(--shadow-lg) !important;
       border: 1px solid var(--rule);
       padding: 0 !important;
       overflow: hidden;
@@ -258,7 +403,7 @@
 
     .player-card {
       padding: 12px 16px;
-      min-width: 220px;
+      min-width: 240px;
     }
     .player-card + .player-card { border-top: 1px solid var(--rule); }
 
@@ -275,7 +420,10 @@
       object-fit: cover;
       border: 1px solid var(--rule);
       flex-shrink: 0;
+      cursor: pointer;
+      transition: opacity .15s;
     }
+    .card-flag:hover { opacity: .8; }
     .card-name {
       font-family: 'Anton', sans-serif;
       font-size: 1.1rem;
@@ -289,7 +437,9 @@
       text-transform: uppercase;
       letter-spacing: .08em;
       margin-top: 2px;
+      cursor: pointer;
     }
+    .card-sub:hover { color: var(--orange); }
     .card-row {
       display: flex;
       justify-content: space-between;
@@ -331,6 +481,118 @@
       box-shadow: 0 1px 3px rgba(0,0,0,.3);
     }
 
+    /* ── Modal (about + featured) ──────────────────────────────────────── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      background: rgba(26,26,26,.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+    .modal-backdrop.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background: var(--white);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      box-shadow: var(--shadow-lg);
+      max-width: 480px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal-head {
+      display: flex;
+      align-items: center;
+      padding: 14px 18px;
+      border-bottom: 2px solid var(--orange);
+    }
+    .modal-head .title {
+      font-family: 'Anton', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: .1em;
+    }
+    .modal-head .close {
+      margin-left: auto;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: var(--muted);
+      padding: 0 4px;
+    }
+    .modal-head .close:hover { color: var(--orange); }
+    .modal-body {
+      padding: 18px;
+      font-size: .88rem;
+      line-height: 1.6;
+    }
+    .modal-body p { margin-bottom: 12px; }
+    .modal-body p:last-child { margin-bottom: 0; }
+    .modal-body strong { font-weight: 600; }
+    .modal-body a {
+      color: var(--orange);
+      text-decoration: none;
+      border-bottom: 1px solid var(--orange);
+    }
+    .modal-body a:hover { opacity: .7; }
+
+    /* ── Featured player ──────────────────────────────────────────────── */
+    .featured-card {
+      padding: 18px;
+    }
+    .featured-flag {
+      width: 56px;
+      height: 42px;
+      object-fit: cover;
+      border: 1px solid var(--rule);
+      margin-bottom: 12px;
+    }
+    .featured-name {
+      font-family: 'Anton', sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .featured-team {
+      font-size: .75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 14px;
+    }
+    .featured-rows {
+      border-top: 1px solid var(--rule);
+      padding-top: 10px;
+      margin-bottom: 14px;
+    }
+    .featured-action {
+      display: inline-block;
+      padding: 8px 16px;
+      background: var(--orange);
+      color: white;
+      font-family: 'Anton', sans-serif;
+      font-size: .8rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    .featured-action:hover { opacity: .85; }
+
     /* ── Loading state ────────────────────────────────────────────────── */
     #loader {
       position: fixed;
@@ -370,14 +632,14 @@
     }
 
     /* ── Mobile ────────────────────────────────────────────────────────── */
-    @media (max-width: 600px) {
-      #filters {
+    @media (max-width: 700px) {
+      #sidebar {
         left: 12px;
         right: 12px;
-        max-width: none;
-        top: 12px;
+        width: auto;
+        max-height: 50vh;
       }
-      .leaflet-top.leaflet-left { top: 260px; }
+      .leaflet-top.leaflet-left { top: 360px; }
       #panel .brand-title { font-size: 1.2rem; }
     }
   </style>
@@ -393,54 +655,92 @@
 
   <div id="map"></div>
 
-  <!-- ── Filter panel ───────────────────────────────────────────────── -->
-  <div id="filters">
-    <div class="filter-head">
-      <strong>FILTERS</strong>
-      <span class="meta" id="filter-count">—</span>
+  <!-- ── Left sidebar ─────────────────────────────────────────────── -->
+  <div id="sidebar">
+
+    <!-- Country panel — slides in when country filter is active -->
+    <div class="panel" id="country-panel">
+      <div class="panel-head">
+        <strong>COUNTRY</strong>
+        <button class="close-btn" id="country-close" title="Clear country filter">×</button>
+      </div>
+      <div class="country-display">
+        <img class="country-flag-big" id="country-flag" src="" alt="">
+        <div class="country-info">
+          <div class="country-name" id="country-name">—</div>
+          <div class="country-iso" id="country-iso">—</div>
+        </div>
+      </div>
     </div>
 
-    <div class="filter-row">
-      <label>National team</label>
-      <select id="f-country">
-        <option value="">All teams</option>
-      </select>
+    <!-- Main filter panel -->
+    <div class="panel">
+      <div class="panel-head">
+        <strong>FILTERS</strong>
+        <span class="meta" id="filter-count">—</span>
+      </div>
+
+      <div class="search-wrap">
+        <input type="search" id="f-search" placeholder="Search player by name…" autocomplete="off">
+        <span class="search-icon">⌕</span>
+      </div>
+
+      <div class="filter-row">
+        <label>National team</label>
+        <select id="f-country"><option value="">All teams</option></select>
+      </div>
+
+      <div class="filter-row">
+        <label>Club competition</label>
+        <select id="f-clubcomp"><option value="">All competitions</option></select>
+      </div>
+
+      <div class="filter-row child">
+        <label>Club</label>
+        <select id="f-club" disabled><option value="">All clubs</option></select>
+      </div>
+
+      <div class="filter-row">
+        <label>Position</label>
+        <select id="f-position"><option value="">All positions</option></select>
+      </div>
+
+      <div class="filter-row">
+        <label>Country of birth</label>
+        <select id="f-birth"><option value="">All countries</option></select>
+      </div>
+
+      <div class="filter-row toggle">
+        <input type="checkbox" id="f-active" checked>
+        <label for="f-active">Active selections only</label>
+      </div>
+
+      <button class="reset-btn" id="reset-filters">↻ Reset filters</button>
     </div>
 
-    <div class="filter-row">
-      <label>Club competition</label>
-      <select id="f-clubcomp">
-        <option value="">All competitions</option>
-      </select>
+    <!-- Stats panel — shows when any filter is active -->
+    <div class="panel" id="stats-panel">
+      <div class="panel-head">
+        <strong>STATS</strong>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Players</span>
+        <span class="stat-value" id="stat-total">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Birthplaces</span>
+        <span class="stat-value" id="stat-places">—</span>
+      </div>
+
+      <div class="stat-bullets" id="stat-comps">
+        <div class="stat-head">Top club leagues</div>
+      </div>
+
+      <div class="stat-bullets" id="stat-countries">
+        <div class="stat-head">Top countries of birth</div>
+      </div>
     </div>
 
-    <div class="filter-row child">
-      <label>Club</label>
-      <select id="f-club" disabled>
-        <option value="">All clubs</option>
-      </select>
-    </div>
-
-    <div class="filter-row">
-      <label>Position</label>
-      <select id="f-position">
-        <option value="">All positions</option>
-      </select>
-    </div>
-
-    <div class="filter-row">
-      <label>Country of birth</label>
-      <select id="f-birth">
-        <option value="">All countries</option>
-      </select>
-    </div>
-
-    <div class="filter-row toggle">
-      <input type="checkbox" id="f-active" checked>
-      <label for="f-active">Active selections only</label>
-    </div>
-
-    <button class="reset-btn" id="reset-filters">↻ Reset filters</button>
   </div>
 
   <!-- ── Bottom brand strip ─────────────────────────────────────────── -->
@@ -453,14 +753,71 @@
       <div class="divider"></div>
       <span id="player-count">Loading…</span>
     </div>
+    <button class="about-link" id="about-btn">About</button>
+  </div>
+
+  <!-- ── Modals ───────────────────────────────────────────────────────── -->
+  <div class="modal-backdrop" id="about-modal">
+    <div class="modal">
+      <div class="modal-head">
+        <span class="title">ABOUT FC MAPS</span>
+        <button class="close" data-close="about-modal">×</button>
+      </div>
+      <div class="modal-body">
+        <p>
+          <strong>FC Maps</strong> is an interactive atlas of professional football. The current
+          edition focuses on the <strong>FIFA World Cup 2026</strong>, plotting where every player
+          in every qualified national squad was born.
+        </p>
+        <p>
+          The data combines squad lists with geocoded birthplaces, club affiliations, and current
+          season rosters. Each marker on the map represents one player. Click on a flag to see
+          the player's career details.
+        </p>
+        <p>
+          <strong>Data sources.</strong> Squad and biographical information was collected from
+          publicly available football references. Birthplace coordinates were derived using the
+          OpenStreetMap Nominatim geocoder, supplemented with manual corrections where the
+          geocoder could not resolve a location (historical countries, alternate spellings, small
+          villages). Country borders come from Natural Earth.
+        </p>
+        <p>
+          <strong>Methodology.</strong> Players born in countries that no longer exist (Yugoslavia,
+          Czechoslovakia, Zaire) retain their historical country name as recorded at the time of
+          birth, while the geographic coordinates fall within the modern successor state. Coastal
+          and island birthplaces are matched within a 5 km tolerance of national borders.
+        </p>
+        <p>
+          <strong>Open project.</strong> The code, scrapers, and data pipeline are open source.
+          Feedback, corrections, and collaborations are welcome.
+        </p>
+        <p>
+          <strong>Contact.</strong> Email <a href="mailto:hello@fcmaps.com">hello@fcmaps.com</a>
+          or reach out via the project's GitHub repository.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="featured-modal">
+    <div class="modal">
+      <div class="modal-head">
+        <span class="title">FEATURED PLAYER</span>
+        <button class="close" data-close="featured-modal">×</button>
+      </div>
+      <div class="featured-card" id="featured-content">
+        <!-- Filled by JS -->
+      </div>
+    </div>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // ── Config ─────────────────────────────────────────────────────────
+    // ── Config ────────────────────────────────────────────────────────
+    // Relative URL — served by Django on the same origin
     const API_URL = '/api/squad/?competition_code=WC2026&page_size=2000';
 
-    // ── ISO3 → ISO2 mapping (for flag CDN) ──────────────────────────────
+    // ── ISO3 → ISO2 mapping ────────────────────────────────────────────
     const ISO3_TO_ISO2 = {
       AFG:"af",ALB:"al",DZA:"dz",ALG:"dz",AND:"ad",AGO:"ao",ARG:"ar",ARM:"am",
       AUS:"au",AUT:"at",AZE:"az",BHS:"bs",BHR:"bh",BGD:"bd",BRB:"bb",BLR:"by",
@@ -491,14 +848,14 @@
       CUW:"cw",XKX:"xk",PRI:"pr",HKG:"hk",MAC:"mo",
     };
 
-    function flagUrl(iso3) {
+    function flagUrl(iso3, size = 'w40') {
       if (!iso3) return null;
       const iso2 = ISO3_TO_ISO2[iso3.toUpperCase()];
       if (!iso2) return null;
-      return `https://flagcdn.com/w40/${iso2}.png`;
+      return `https://flagcdn.com/${size}/${iso2}.png`;
     }
 
-    // ── Map init ────────────────────────────────────────────────────────
+    // ── Map init ──────────────────────────────────────────────────────
     const map = L.map('map', { zoomControl: true, preferCanvas: true });
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap &copy; CARTO',
@@ -506,7 +863,7 @@
       maxZoom: 20
     }).addTo(map);
 
-    // ── State ──────────────────────────────────────────────────────────
+    // ── State ────────────────────────────────────────────────────────
     let allFeatures = [];
     let currentLayer = null;
     const filterState = {
@@ -516,18 +873,20 @@
       position:  '',
       birth:     '',
       activeOnly: true,
+      search:    '',
     };
 
     // ── Popup card ──────────────────────────────────────────────────────
     function popupHtml(p) {
       const flag = flagUrl(p.country_iso3);
+      const teamLabel = p.national_team ?? p.country_iso3 ?? '';
       return `
         <div class="player-card">
           <div class="card-top">
-            ${flag ? `<img class="card-flag" src="${flag}" alt="">` : ''}
+            ${flag ? `<img class="card-flag" src="${flag}" alt="" data-filter-country="${p.country_iso3 ?? ''}" title="Filter by ${teamLabel}">` : ''}
             <div>
               <div class="card-name">${p.name ?? 'Unknown'}</div>
-              <div class="card-sub">${p.national_team ?? p.country_iso3 ?? ''}</div>
+              <div class="card-sub" data-filter-country="${p.country_iso3 ?? ''}" title="Filter by ${teamLabel}">${teamLabel}</div>
             </div>
           </div>
           <div class="card-row">
@@ -587,6 +946,7 @@
 
     // ── Filter logic ────────────────────────────────────────────────────
     function applyFilters(features) {
+      const search = filterState.search.trim().toLowerCase();
       return features.filter(f => {
         const p = f.properties || {};
         if (filterState.country  && p.country_iso3       !== filterState.country)  return false;
@@ -595,11 +955,13 @@
         if (filterState.position && p.position           !== filterState.position) return false;
         if (filterState.birth    && p.birth_country_iso3 !== filterState.birth)    return false;
         if (filterState.activeOnly && p.is_active === false) return false;
+        if (search && !(p.name ?? '').toLowerCase().includes(search))               return false;
         return true;
       });
     }
 
     // ── Populate dropdowns ──────────────────────────────────────────────
+    const COUNTRY_NAMES = {};  // iso3 → name
     function populateDropdowns(features) {
       const countries = new Map();
       const clubcomps = new Set();
@@ -608,10 +970,16 @@
 
       features.forEach(f => {
         const p = f.properties;
-        if (p.country_iso3 && p.national_team) countries.set(p.country_iso3, p.national_team);
+        if (p.country_iso3 && p.national_team) {
+          countries.set(p.country_iso3, p.national_team);
+          COUNTRY_NAMES[p.country_iso3] = p.national_team;
+        }
         if (p.club_competition) clubcomps.add(p.club_competition);
         if (p.position)         positions.add(p.position);
-        if (p.birth_country_iso3 && p.birth_country) births.set(p.birth_country_iso3, p.birth_country);
+        if (p.birth_country_iso3 && p.birth_country) {
+          births.set(p.birth_country_iso3, p.birth_country);
+          COUNTRY_NAMES[p.birth_country_iso3] = p.birth_country;
+        }
       });
 
       const fCountry  = document.getElementById('f-country');
@@ -619,32 +987,23 @@
       const fPosition = document.getElementById('f-position');
       const fBirth    = document.getElementById('f-birth');
 
-      [...countries.entries()]
-        .sort((a, b) => a[1].localeCompare(b[1]))
-        .forEach(([iso3, name]) => {
-          fCountry.insertAdjacentHTML('beforeend', `<option value="${iso3}">${name}</option>`);
-        });
-
+      [...countries.entries()].sort((a, b) => a[1].localeCompare(b[1])).forEach(([iso3, name]) => {
+        fCountry.insertAdjacentHTML('beforeend', `<option value="${iso3}">${name}</option>`);
+      });
       [...clubcomps].sort().forEach(c => {
         fClubcomp.insertAdjacentHTML('beforeend', `<option value="${c}">${c}</option>`);
       });
-
       [...positions].sort().forEach(p => {
         fPosition.insertAdjacentHTML('beforeend', `<option value="${p}">${p}</option>`);
       });
-
-      [...births.entries()]
-        .sort((a, b) => a[1].localeCompare(b[1]))
-        .forEach(([iso3, name]) => {
-          fBirth.insertAdjacentHTML('beforeend', `<option value="${iso3}">${name}</option>`);
-        });
+      [...births.entries()].sort((a, b) => a[1].localeCompare(b[1])).forEach(([iso3, name]) => {
+        fBirth.insertAdjacentHTML('beforeend', `<option value="${iso3}">${name}</option>`);
+      });
     }
 
-    // ── Repopulate clubs dropdown based on selected competition ─────────
     function updateClubsDropdown() {
       const fClub = document.getElementById('f-club');
       fClub.innerHTML = '<option value="">All clubs</option>';
-
       if (!filterState.clubcomp) {
         fClub.disabled = true;
         fClub.value = '';
@@ -652,27 +1011,21 @@
         fClub.classList.remove('active');
         return;
       }
-
       const clubs = new Set();
       allFeatures.forEach(f => {
         const p = f.properties || {};
-        if (p.club_competition === filterState.clubcomp && p.club) {
-          clubs.add(p.club);
-        }
+        if (p.club_competition === filterState.clubcomp && p.club) clubs.add(p.club);
       });
-
       [...clubs].sort().forEach(c => {
         fClub.insertAdjacentHTML('beforeend', `<option value="${c}">${c}</option>`);
       });
-
       fClub.disabled = false;
-      // Reset club value when competition changes
       fClub.value = '';
       filterState.club = '';
       fClub.classList.remove('active');
     }
 
-    // ── Render ──────────────────────────────────────────────────────────
+    // ── Render markers ─────────────────────────────────────────────────
     function render(features) {
       if (currentLayer) map.removeLayer(currentLayer);
 
@@ -699,10 +1052,78 @@
       document.getElementById('filter-count').textContent = `${features.length}/${allFeatures.length}`;
     }
 
-    // ── Filter UI wiring ────────────────────────────────────────────────
+    // ── Stats panel ─────────────────────────────────────────────────────
+    function updateStats(filtered) {
+      const anyFilter = Object.values(filterState).some(v => v !== '' && v !== true);
+      const statsPanel = document.getElementById('stats-panel');
+
+      if (!anyFilter || filtered.length === 0) {
+        statsPanel.classList.remove('visible');
+        return;
+      }
+
+      statsPanel.classList.add('visible');
+      document.getElementById('stat-total').textContent  = filtered.length;
+
+      // Unique birthplaces
+      const places = new Set();
+      const compCounts    = {};
+      const countryCounts = {};
+      filtered.forEach(f => {
+        const p = f.properties;
+        if (p.match_addr) places.add(p.match_addr);
+        if (p.club_competition) compCounts[p.club_competition]    = (compCounts[p.club_competition] ?? 0) + 1;
+        if (p.birth_country)    countryCounts[p.birth_country]    = (countryCounts[p.birth_country] ?? 0) + 1;
+      });
+      document.getElementById('stat-places').textContent = places.size;
+
+      const renderTop = (id, counts, max = 5) => {
+        const el = document.getElementById(id);
+        const head = el.querySelector('.stat-head');
+        el.innerHTML = '';
+        el.appendChild(head);
+        const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, max);
+        sorted.forEach(([name, count]) => {
+          el.insertAdjacentHTML('beforeend',
+            `<div><span>${name}</span><span class="count">${count}</span></div>`);
+        });
+      };
+      renderTop('stat-comps', compCounts);
+      renderTop('stat-countries', countryCounts);
+    }
+
+    // ── Country panel ──────────────────────────────────────────────────
+    function updateCountryPanel() {
+      const panel = document.getElementById('country-panel');
+      if (!filterState.country) {
+        panel.classList.remove('visible');
+        return;
+      }
+      const name = COUNTRY_NAMES[filterState.country] || filterState.country;
+      const flag = flagUrl(filterState.country, 'w80');
+      document.getElementById('country-name').textContent = name;
+      document.getElementById('country-iso').textContent  = filterState.country;
+      document.getElementById('country-flag').src = flag || '';
+      panel.classList.add('visible');
+    }
+
+    // ── Apply filter changes ────────────────────────────────────────────
     function refresh() {
       const filtered = applyFilters(allFeatures);
       render(filtered);
+      updateStats(filtered);
+      updateCountryPanel();
+    }
+
+    function setCountryFilter(iso3) {
+      if (!iso3) return;
+      const fCountry = document.getElementById('f-country');
+      fCountry.value = iso3;
+      fCountry.classList.toggle('active', !!iso3);
+      filterState.country = iso3;
+      refresh();
+      // Close any open popup
+      map.closePopup();
     }
 
     function setupFilterListeners() {
@@ -714,7 +1135,6 @@
         'f-birth':    'birth',
       };
 
-      // Click on competition → update clubs dropdown
       document.getElementById('f-clubcomp').addEventListener('change', e => {
         filterState.clubcomp = e.target.value;
         e.target.classList.toggle('active', !!e.target.value);
@@ -722,7 +1142,6 @@
         refresh();
       });
 
-      // Other dropdowns — generic
       ['f-country', 'f-club', 'f-position', 'f-birth'].forEach(id => {
         const el = document.getElementById(id);
         el.addEventListener('change', () => {
@@ -737,6 +1156,11 @@
         refresh();
       });
 
+      document.getElementById('f-search').addEventListener('input', e => {
+        filterState.search = e.target.value;
+        refresh();
+      });
+
       document.getElementById('reset-filters').addEventListener('click', () => {
         for (const [id, key] of Object.entries(ids)) {
           const el = document.getElementById(id);
@@ -746,9 +1170,88 @@
         }
         document.getElementById('f-club').disabled = true;
         document.getElementById('f-active').checked = true;
+        document.getElementById('f-search').value = '';
         filterState.activeOnly = true;
+        filterState.search = '';
         refresh();
       });
+
+      document.getElementById('country-close').addEventListener('click', () => {
+        const fCountry = document.getElementById('f-country');
+        fCountry.value = '';
+        fCountry.classList.remove('active');
+        filterState.country = '';
+        refresh();
+      });
+    }
+
+    // ── Click handler — popup links trigger country filter ─────────────
+    document.addEventListener('click', e => {
+      const target = e.target.closest('[data-filter-country]');
+      if (target) {
+        const iso3 = target.getAttribute('data-filter-country');
+        if (iso3) setCountryFilter(iso3);
+      }
+    });
+
+    // ── Modals ──────────────────────────────────────────────────────────
+    function openModal(id)  { document.getElementById(id).classList.add('visible'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('visible'); }
+
+    document.getElementById('about-btn').addEventListener('click', () => openModal('about-modal'));
+    document.querySelectorAll('[data-close]').forEach(el => {
+      el.addEventListener('click', () => closeModal(el.getAttribute('data-close')));
+    });
+    document.querySelectorAll('.modal-backdrop').forEach(el => {
+      el.addEventListener('click', e => {
+        if (e.target === el) el.classList.remove('visible');
+      });
+    });
+
+    // ── Featured player ────────────────────────────────────────────────
+    function showFeaturedPlayer(features) {
+      // Pick a player that has good data (geometry + national team + club)
+      const eligible = features.filter(f =>
+        f.geometry?.coordinates &&
+        f.properties.national_team &&
+        f.properties.club &&
+        f.properties.match_addr &&
+        f.properties.is_active !== false
+      );
+      if (eligible.length === 0) return;
+
+      const p = eligible[Math.floor(Math.random() * eligible.length)].properties;
+      const coords = features.find(f => f.properties === p).geometry.coordinates;
+      const flag = flagUrl(p.country_iso3, 'w80');
+
+      const html = `
+        ${flag ? `<img class="featured-flag" src="${flag}" alt="">` : ''}
+        <div class="featured-name">${p.name}</div>
+        <div class="featured-team">${p.national_team} · ${p.position ?? ''}</div>
+        <div class="featured-rows">
+          <div class="card-row">
+            <span class="label">Birthplace</span>
+            <span class="value">${p.match_addr}</span>
+          </div>
+          <div class="card-row">
+            <span class="label">Club</span>
+            <span class="value">${p.club}</span>
+          </div>
+          <div class="card-row">
+            <span class="label">Competition</span>
+            <span class="value">${p.club_competition ?? '—'}</span>
+          </div>
+        </div>
+        <button class="featured-action" id="show-on-map">Show on map →</button>
+      `;
+      document.getElementById('featured-content').innerHTML = html;
+      document.getElementById('show-on-map').addEventListener('click', () => {
+        closeModal('featured-modal');
+        map.setView([coords[1], coords[0]], 8, { animate: true });
+      });
+
+      // Show after a brief moment so it doesn't compete with the loader
+      setTimeout(() => openModal('featured-modal'), 800);
     }
 
     // ── Boot ────────────────────────────────────────────────────────────
@@ -759,6 +1262,7 @@
 
       const filtered = applyFilters(features);
       render(filtered);
+      updateStats(filtered);
 
       try {
         const grp = currentLayer;
@@ -783,13 +1287,15 @@
       loader.classList.add('hidden');
       setTimeout(() => loader.remove(), 300);
 
+      showFeaturedPlayer(features);
+
     }).catch(err => {
       console.error(err);
       document.getElementById('loader').innerHTML =
         `<div style="text-align:center">
            <div class="title">Connection <span>failed</span></div>
            <p style="color:#999;font-size:.8rem;margin-top:8px;font-family:'Inter',sans-serif">
-             Make sure Django is running on port 8000.
+             Could not load player data.
            </p>
          </div>`;
     });
