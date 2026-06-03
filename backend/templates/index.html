@@ -41,8 +41,8 @@
       z-index: 0;
     }
 
-    /* ── Left sidebar (filters + stats + country) ──────────────────── */
-    #sidebar {
+    /* ── Left sidebar (filters) ────────────────────────────────────── */
+    #sidebar-left {
       position: fixed;
       top: 12px;
       left: 60px;
@@ -53,6 +53,24 @@
       flex-direction: column;
       gap: 12px;
       overflow-y: auto;
+    }
+
+    /* ── Right sidebar (stats + country) ───────────────────────────── */
+    #sidebar-right {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      bottom: 64px;
+      z-index: 800;
+      width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      pointer-events: none; /* let map clicks pass through empty space */
+    }
+    #sidebar-right .panel {
+      pointer-events: auto;
     }
 
     .panel {
@@ -481,7 +499,7 @@
       box-shadow: 0 1px 3px rgba(0,0,0,.3);
     }
 
-    /* ── Modal (about + featured) ──────────────────────────────────────── */
+    /* ── Modal (about) ──────────────────────────────────────── */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -546,53 +564,6 @@
     }
     .modal-body a:hover { opacity: .7; }
 
-    /* ── Featured player ──────────────────────────────────────────────── */
-    .featured-card {
-      padding: 18px;
-    }
-    .featured-flag {
-      width: 56px;
-      height: 42px;
-      object-fit: cover;
-      border: 1px solid var(--rule);
-      margin-bottom: 12px;
-    }
-    .featured-name {
-      font-family: 'Anton', sans-serif;
-      font-size: 1.8rem;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-    .featured-team {
-      font-size: .75rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      margin-bottom: 14px;
-    }
-    .featured-rows {
-      border-top: 1px solid var(--rule);
-      padding-top: 10px;
-      margin-bottom: 14px;
-    }
-    .featured-action {
-      display: inline-block;
-      padding: 8px 16px;
-      background: var(--orange);
-      color: white;
-      font-family: 'Anton', sans-serif;
-      font-size: .8rem;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-      transition: opacity .15s;
-    }
-    .featured-action:hover { opacity: .85; }
-
     /* ── Loading state ────────────────────────────────────────────────── */
     #loader {
       position: fixed;
@@ -632,12 +603,18 @@
     }
 
     /* ── Mobile ────────────────────────────────────────────────────────── */
-    @media (max-width: 700px) {
-      #sidebar {
+    @media (max-width: 900px) {
+      #sidebar-left {
         left: 12px;
         right: 12px;
         width: auto;
         max-height: 50vh;
+        bottom: auto;
+      }
+      #sidebar-right {
+        position: static;
+        width: auto;
+        max-height: none;
       }
       .leaflet-top.leaflet-left { top: 360px; }
       #panel .brand-title { font-size: 1.2rem; }
@@ -655,23 +632,8 @@
 
   <div id="map"></div>
 
-  <!-- ── Left sidebar ─────────────────────────────────────────────── -->
-  <div id="sidebar">
-
-    <!-- Country panel — slides in when country filter is active -->
-    <div class="panel" id="country-panel">
-      <div class="panel-head">
-        <strong>COUNTRY</strong>
-        <button class="close-btn" id="country-close" title="Clear country filter">×</button>
-      </div>
-      <div class="country-display">
-        <img class="country-flag-big" id="country-flag" src="" alt="">
-        <div class="country-info">
-          <div class="country-name" id="country-name">—</div>
-          <div class="country-iso" id="country-iso">—</div>
-        </div>
-      </div>
-    </div>
+  <!-- ── Left sidebar — filters ───────────────────────────────────── -->
+  <div id="sidebar-left">
 
     <!-- Main filter panel -->
     <div class="panel">
@@ -718,6 +680,26 @@
       <button class="reset-btn" id="reset-filters">↻ Reset filters</button>
     </div>
 
+  </div>
+
+  <!-- ── Right sidebar — country + stats ──────────────────────────── -->
+  <div id="sidebar-right">
+
+    <!-- Country panel — slides in when country filter is active -->
+    <div class="panel" id="country-panel">
+      <div class="panel-head">
+        <strong>COUNTRY</strong>
+        <button class="close-btn" id="country-close" title="Clear country filter">×</button>
+      </div>
+      <div class="country-display">
+        <img class="country-flag-big" id="country-flag" src="" alt="">
+        <div class="country-info">
+          <div class="country-name" id="country-name">—</div>
+          <div class="country-iso" id="country-iso">—</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Stats panel — shows when any filter is active -->
     <div class="panel" id="stats-panel">
       <div class="panel-head">
@@ -756,7 +738,7 @@
     <button class="about-link" id="about-btn">About</button>
   </div>
 
-  <!-- ── Modals ───────────────────────────────────────────────────────── -->
+  <!-- ── About modal ─────────────────────────────────────────────────── -->
   <div class="modal-backdrop" id="about-modal">
     <div class="modal">
       <div class="modal-head">
@@ -795,18 +777,6 @@
           <strong>Contact.</strong> Email <a href="mailto:hello@fcmaps.com">hello@fcmaps.com</a>
           or reach out via the project's GitHub repository.
         </p>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="featured-modal">
-    <div class="modal">
-      <div class="modal-head">
-        <span class="title">FEATURED PLAYER</span>
-        <button class="close" data-close="featured-modal">×</button>
-      </div>
-      <div class="featured-card" id="featured-content">
-        <!-- Filled by JS -->
       </div>
     </div>
   </div>
@@ -1208,52 +1178,6 @@
       });
     });
 
-    // ── Featured player ────────────────────────────────────────────────
-    function showFeaturedPlayer(features) {
-      // Pick a player that has good data (geometry + national team + club)
-      const eligible = features.filter(f =>
-        f.geometry?.coordinates &&
-        f.properties.national_team &&
-        f.properties.club &&
-        f.properties.match_addr &&
-        f.properties.is_active !== false
-      );
-      if (eligible.length === 0) return;
-
-      const p = eligible[Math.floor(Math.random() * eligible.length)].properties;
-      const coords = features.find(f => f.properties === p).geometry.coordinates;
-      const flag = flagUrl(p.country_iso3, 'w80');
-
-      const html = `
-        ${flag ? `<img class="featured-flag" src="${flag}" alt="">` : ''}
-        <div class="featured-name">${p.name}</div>
-        <div class="featured-team">${p.national_team} · ${p.position ?? ''}</div>
-        <div class="featured-rows">
-          <div class="card-row">
-            <span class="label">Birthplace</span>
-            <span class="value">${p.match_addr}</span>
-          </div>
-          <div class="card-row">
-            <span class="label">Club</span>
-            <span class="value">${p.club}</span>
-          </div>
-          <div class="card-row">
-            <span class="label">Competition</span>
-            <span class="value">${p.club_competition ?? '—'}</span>
-          </div>
-        </div>
-        <button class="featured-action" id="show-on-map">Show on map →</button>
-      `;
-      document.getElementById('featured-content').innerHTML = html;
-      document.getElementById('show-on-map').addEventListener('click', () => {
-        closeModal('featured-modal');
-        map.setView([coords[1], coords[0]], 8, { animate: true });
-      });
-
-      // Show after a brief moment so it doesn't compete with the loader
-      setTimeout(() => openModal('featured-modal'), 800);
-    }
-
     // ── Boot ────────────────────────────────────────────────────────────
     fetchAll().then(features => {
       allFeatures = features;
@@ -1286,8 +1210,6 @@
       const loader = document.getElementById('loader');
       loader.classList.add('hidden');
       setTimeout(() => loader.remove(), 300);
-
-      showFeaturedPlayer(features);
 
     }).catch(err => {
       console.error(err);
