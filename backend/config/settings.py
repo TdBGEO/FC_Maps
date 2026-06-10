@@ -70,7 +70,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "django.middleware.gzip.GZipMiddleware",  # ← nieuw
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",       # ← serve static files
     "corsheaders.middleware.CorsMiddleware",
