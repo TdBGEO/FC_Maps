@@ -73,6 +73,14 @@
       padding: 14px 18px;
     }
 
+    /* Collapsible state — only the header stays visible */
+    .panel.collapsed .panel-body { display: none; }
+    .panel.collapsed .panel-head {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
     .panel-head {
       display: flex;
       align-items: center;
@@ -104,6 +112,20 @@
       padding: 0 4px;
     }
     .panel-head .close-btn:hover { color: var(--orange); }
+
+    /* Collapse toggle button */
+    .toggle-btn {
+      cursor: pointer;
+      color: var(--muted);
+      background: none;
+      border: none;
+      padding: 0 4px;
+      font-size: 1rem;
+      line-height: 1;
+      transition: transform .15s, color .15s;
+    }
+    .toggle-btn:hover { color: var(--orange); }
+    .panel.collapsed .toggle-btn { transform: rotate(-90deg); }
 
     .search-wrap { position: relative; margin-bottom: 12px; }
     .search-wrap input {
@@ -544,20 +566,36 @@
     }
 
     @media (max-width: 900px) {
+      /* Compact floating panels at top of screen */
       #sidebar-left {
+        top: 12px;
         left: 12px;
         right: 12px;
         width: auto;
-        max-height: 50vh;
         bottom: auto;
-      }
-      #sidebar-right {
-        position: static;
-        width: auto;
         max-height: none;
       }
-      .leaflet-top.leaflet-left { top: 360px; }
+      #sidebar-right {
+        top: auto;
+        bottom: 70px;
+        left: 12px;
+        right: 12px;
+        width: auto;
+        max-height: 40vh;
+      }
+      /* Hide the empty space pass-through on mobile, panels are always visible */
+      #sidebar-right { pointer-events: auto; }
+      /* Default collapsed on mobile to save space */
+      #sidebar-left .panel,
+      #sidebar-right .panel {
+        padding: 10px 14px;
+      }
+      .leaflet-top.leaflet-left { top: 12px; }
       #panel .brand-title { font-size: 1.2rem; }
+      #panel .meta { padding: 0 12px; gap: 6px; }
+      #panel .season,
+      #player-count { font-size: .7rem; }
+      #panel .about-link { padding: 0 12px; font-size: .7rem; }
     }
   </style>
 </head>
@@ -573,43 +611,46 @@
   <div id="map"></div>
 
   <div id="sidebar-left">
-    <div class="panel">
+    <div class="panel" id="filter-panel">
       <div class="panel-head">
         <strong>FILTERS</strong>
         <span class="meta" id="filter-count">—</span>
+        <button class="toggle-btn" data-toggle="filter-panel" title="Collapse">▾</button>
       </div>
 
-      <div class="search-wrap">
-        <input type="search" id="f-search" placeholder="Search player by name…" autocomplete="off">
-        <span class="search-icon">⌕</span>
-      </div>
+      <div class="panel-body">
+        <div class="search-wrap">
+          <input type="search" id="f-search" placeholder="Search player by name…" autocomplete="off">
+          <span class="search-icon">⌕</span>
+        </div>
 
-      <div class="filter-row">
-        <label>National team</label>
-        <select id="f-country"><option value="">All teams</option></select>
-      </div>
+        <div class="filter-row">
+          <label>National team</label>
+          <select id="f-country"><option value="">All teams</option></select>
+        </div>
 
-      <div class="filter-row">
-        <label>Club competition</label>
-        <select id="f-clubcomp"><option value="">All competitions</option></select>
-      </div>
+        <div class="filter-row">
+          <label>Club competition</label>
+          <select id="f-clubcomp"><option value="">All competitions</option></select>
+        </div>
 
-      <div class="filter-row child">
-        <label>Club</label>
-        <select id="f-club" disabled><option value="">All clubs</option></select>
-      </div>
+        <div class="filter-row child">
+          <label>Club</label>
+          <select id="f-club" disabled><option value="">All clubs</option></select>
+        </div>
 
-      <div class="filter-row">
-        <label>Position</label>
-        <select id="f-position"><option value="">All positions</option></select>
-      </div>
+        <div class="filter-row">
+          <label>Position</label>
+          <select id="f-position"><option value="">All positions</option></select>
+        </div>
 
-      <div class="filter-row">
-        <label>Country of birth</label>
-        <select id="f-birth"><option value="">All countries</option></select>
-      </div>
+        <div class="filter-row">
+          <label>Country of birth</label>
+          <select id="f-birth"><option value="">All countries</option></select>
+        </div>
 
-      <button class="reset-btn" id="reset-filters">↻ Reset filters</button>
+        <button class="reset-btn" id="reset-filters">↻ Reset filters</button>
+      </div>
     </div>
   </div>
 
@@ -617,13 +658,16 @@
     <div class="panel" id="country-panel">
       <div class="panel-head">
         <strong>COUNTRY</strong>
+        <button class="toggle-btn" data-toggle="country-panel" title="Collapse">▾</button>
         <button class="close-btn" id="country-close" title="Clear country filter">×</button>
       </div>
-      <div class="country-display">
-        <img class="country-flag-big" id="country-flag" src="" alt="">
-        <div class="country-info">
-          <div class="country-name" id="country-name">—</div>
-          <div class="country-iso" id="country-iso">—</div>
+      <div class="panel-body">
+        <div class="country-display">
+          <img class="country-flag-big" id="country-flag" src="" alt="">
+          <div class="country-info">
+            <div class="country-name" id="country-name">—</div>
+            <div class="country-iso" id="country-iso">—</div>
+          </div>
         </div>
       </div>
     </div>
@@ -631,20 +675,23 @@
     <div class="panel" id="stats-panel">
       <div class="panel-head">
         <strong>STATS</strong>
+        <button class="toggle-btn" data-toggle="stats-panel" title="Collapse">▾</button>
       </div>
-      <div class="stat-row">
-        <span class="stat-label">Players</span>
-        <span class="stat-value" id="stat-total">—</span>
-      </div>
-      <div class="stat-row">
-        <span class="stat-label">Birthplaces</span>
-        <span class="stat-value" id="stat-places">—</span>
-      </div>
-      <div class="stat-bullets" id="stat-comps">
-        <div class="stat-head">Top club leagues</div>
-      </div>
-      <div class="stat-bullets" id="stat-countries">
-        <div class="stat-head">Top countries of birth</div>
+      <div class="panel-body">
+        <div class="stat-row">
+          <span class="stat-label">Players</span>
+          <span class="stat-value" id="stat-total">—</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Birthplaces</span>
+          <span class="stat-value" id="stat-places">—</span>
+        </div>
+        <div class="stat-bullets" id="stat-comps">
+          <div class="stat-head">Top club leagues</div>
+        </div>
+        <div class="stat-bullets" id="stat-countries">
+          <div class="stat-head">Top countries of birth</div>
+        </div>
       </div>
     </div>
   </div>
@@ -1061,6 +1108,21 @@
         if (iso3) setCountryFilter(iso3);
       }
     });
+
+    // Panel collapse toggles
+    document.querySelectorAll('[data-toggle]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const panelId = btn.getAttribute('data-toggle');
+        document.getElementById(panelId).classList.toggle('collapsed');
+      });
+    });
+
+    // Auto-collapse panels on mobile to save screen space
+    if (window.matchMedia('(max-width: 900px)').matches) {
+      document.getElementById('filter-panel').classList.add('collapsed');
+      document.getElementById('stats-panel').classList.add('collapsed');
+    }
 
     function openModal(id)  { document.getElementById(id).classList.add('visible'); }
     function closeModal(id) { document.getElementById(id).classList.remove('visible'); }
