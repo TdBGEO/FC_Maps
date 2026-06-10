@@ -29,19 +29,12 @@
       color: var(--ink);
     }
 
-    .display {
-      font-family: 'Anton', sans-serif;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-    }
-
     #map {
       position: fixed;
       inset: 0;
       z-index: 0;
     }
 
-    /* ── Left sidebar (filters) ────────────────────────────────────── */
     #sidebar-left {
       position: fixed;
       top: 12px;
@@ -55,7 +48,6 @@
       overflow-y: auto;
     }
 
-    /* ── Right sidebar (stats + country) ───────────────────────────── */
     #sidebar-right {
       position: fixed;
       top: 12px;
@@ -67,7 +59,7 @@
       flex-direction: column;
       gap: 12px;
       overflow-y: auto;
-      pointer-events: none; /* let map clicks pass through empty space */
+      pointer-events: none;
     }
     #sidebar-right .panel {
       pointer-events: auto;
@@ -113,11 +105,7 @@
     }
     .panel-head .close-btn:hover { color: var(--orange); }
 
-    /* ── Search bar ──────────────────────────────────────────────────── */
-    .search-wrap {
-      position: relative;
-      margin-bottom: 12px;
-    }
+    .search-wrap { position: relative; margin-bottom: 12px; }
     .search-wrap input {
       width: 100%;
       font-family: 'Inter', sans-serif;
@@ -133,9 +121,7 @@
       outline: none;
       border-color: var(--orange);
     }
-    .search-wrap input::placeholder {
-      color: var(--muted);
-    }
+    .search-wrap input::placeholder { color: var(--muted); }
     .search-wrap .search-icon {
       position: absolute;
       right: 8px;
@@ -146,10 +132,8 @@
       font-size: .85rem;
     }
 
-    /* ── Filter rows ─────────────────────────────────────────────────── */
     .filter-row { margin-bottom: 8px; }
     .filter-row:last-child { margin-bottom: 0; }
-
     .filter-row label {
       display: block;
       font-size: .62rem;
@@ -158,7 +142,6 @@
       letter-spacing: .1em;
       margin-bottom: 3px;
     }
-
     .filter-row select {
       width: 100%;
       font-family: 'Inter', sans-serif;
@@ -189,37 +172,12 @@
       opacity: .5;
       cursor: not-allowed;
     }
-
     .filter-row.child {
       padding-left: 12px;
       border-left: 2px solid var(--rule);
       margin-left: 2px;
     }
-    .filter-row.child label {
-      color: var(--orange);
-    }
-
-    .filter-row.toggle {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid var(--rule);
-    }
-    .filter-row.toggle label {
-      margin: 0;
-      cursor: pointer;
-      color: var(--ink);
-      text-transform: none;
-      letter-spacing: 0;
-      font-size: .78rem;
-      flex: 1;
-    }
-    .filter-row.toggle input {
-      accent-color: var(--orange);
-      cursor: pointer;
-    }
+    .filter-row.child label { color: var(--orange); }
 
     .reset-btn {
       display: inline-block;
@@ -236,10 +194,8 @@
     }
     .reset-btn:hover { color: var(--orange); }
 
-    /* ── Stats panel ─────────────────────────────────────────────────── */
     #stats-panel { display: none; }
     #stats-panel.visible { display: block; }
-
     .stat-row {
       display: flex;
       justify-content: space-between;
@@ -259,7 +215,6 @@
       font-weight: 600;
       color: var(--ink);
     }
-
     .stat-bullets {
       margin-top: 8px;
       padding-top: 8px;
@@ -283,10 +238,8 @@
       font-weight: 600;
     }
 
-    /* ── Country panel (slides in when country filter active) ───────── */
     #country-panel { display: none; }
     #country-panel.visible { display: block; }
-
     .country-display {
       display: flex;
       align-items: center;
@@ -315,7 +268,6 @@
       margin-top: 4px;
     }
 
-    /* ── Bottom brand strip ────────────────────────────────────────────── */
     #panel {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -341,7 +293,6 @@
       line-height: 1;
     }
     #panel .brand-title span { color: var(--orange); }
-
     #panel .meta {
       display: flex;
       align-items: center;
@@ -364,7 +315,6 @@
       letter-spacing: .1em;
       color: var(--orange);
     }
-
     #panel .about-link {
       margin-left: auto;
       padding: 0 18px;
@@ -382,10 +332,8 @@
     }
     #panel .about-link:hover { color: var(--orange); }
 
-    /* ── Leaflet controls ──────────────────────────────────────────────── */
     .leaflet-top.leaflet-left { top: 12px; }
     .leaflet-bottom.leaflet-right { bottom: 60px; }
-
     .leaflet-control-zoom {
       border: none !important;
       box-shadow: var(--shadow) !important;
@@ -405,7 +353,6 @@
     .leaflet-control-zoom a:hover { background: var(--paper) !important; }
     .leaflet-control-zoom-out { border-bottom: none !important; }
 
-    /* ── Popup ─────────────────────────────────────────────────────────── */
     .leaflet-popup-content-wrapper {
       border-radius: 4px !important;
       box-shadow: var(--shadow-lg) !important;
@@ -418,13 +365,11 @@
     }
     .leaflet-popup-content { margin: 0 !important; width: auto !important; }
     .leaflet-popup-tip-container { margin-top: -1px; }
-
     .player-card {
       padding: 12px 16px;
       min-width: 240px;
     }
     .player-card + .player-card { border-top: 1px solid var(--rule); }
-
     .card-top {
       display: flex;
       align-items: center;
@@ -474,7 +419,6 @@
     }
     .card-row .value { text-align: right; }
 
-    /* ── Markers ───────────────────────────────────────────────────────── */
     .fan-wrapper {
       position: relative;
       width: 44px; height: 44px;
@@ -499,7 +443,6 @@
       box-shadow: 0 1px 3px rgba(0,0,0,.3);
     }
 
-    /* ── Modal (about) ──────────────────────────────────────── */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -517,7 +460,6 @@
       opacity: 1;
       pointer-events: auto;
     }
-
     .modal {
       background: var(--white);
       border: 1px solid var(--rule);
@@ -564,7 +506,6 @@
     }
     .modal-body a:hover { opacity: .7; }
 
-    /* ── Loading state ────────────────────────────────────────────────── */
     #loader {
       position: fixed;
       inset: 0;
@@ -602,7 +543,6 @@
       100% { width: 0%; margin-left: 100%; }
     }
 
-    /* ── Mobile ────────────────────────────────────────────────────────── */
     @media (max-width: 900px) {
       #sidebar-left {
         left: 12px;
@@ -632,10 +572,7 @@
 
   <div id="map"></div>
 
-  <!-- ── Left sidebar — filters ───────────────────────────────────── -->
   <div id="sidebar-left">
-
-    <!-- Main filter panel -->
     <div class="panel">
       <div class="panel-head">
         <strong>FILTERS</strong>
@@ -672,20 +609,11 @@
         <select id="f-birth"><option value="">All countries</option></select>
       </div>
 
-      <div class="filter-row toggle">
-        <input type="checkbox" id="f-active" checked>
-        <label for="f-active">Active selections only</label>
-      </div>
-
       <button class="reset-btn" id="reset-filters">↻ Reset filters</button>
     </div>
-
   </div>
 
-  <!-- ── Right sidebar — country + stats ──────────────────────────── -->
   <div id="sidebar-right">
-
-    <!-- Country panel — slides in when country filter is active -->
     <div class="panel" id="country-panel">
       <div class="panel-head">
         <strong>COUNTRY</strong>
@@ -700,7 +628,6 @@
       </div>
     </div>
 
-    <!-- Stats panel — shows when any filter is active -->
     <div class="panel" id="stats-panel">
       <div class="panel-head">
         <strong>STATS</strong>
@@ -713,19 +640,15 @@
         <span class="stat-label">Birthplaces</span>
         <span class="stat-value" id="stat-places">—</span>
       </div>
-
       <div class="stat-bullets" id="stat-comps">
         <div class="stat-head">Top club leagues</div>
       </div>
-
       <div class="stat-bullets" id="stat-countries">
         <div class="stat-head">Top countries of birth</div>
       </div>
     </div>
-
   </div>
 
-  <!-- ── Bottom brand strip ─────────────────────────────────────────── -->
   <div id="panel">
     <div class="brand">
       <div class="brand-title">FC <span>MAPS</span></div>
@@ -738,7 +661,6 @@
     <button class="about-link" id="about-btn">About</button>
   </div>
 
-  <!-- ── About modal ─────────────────────────────────────────────────── -->
   <div class="modal-backdrop" id="about-modal">
     <div class="modal">
       <div class="modal-head">
@@ -783,11 +705,8 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // ── Config ────────────────────────────────────────────────────────
-    // Relative URL — served by Django on the same origin
     const API_URL = '/api/squad/?competition_code=WC2026&page_size=2000';
 
-    // ── ISO3 → ISO2 mapping ────────────────────────────────────────────
     const ISO3_TO_ISO2 = {
       AFG:"af",ALB:"al",DZA:"dz",ALG:"dz",AND:"ad",AGO:"ao",ARG:"ar",ARM:"am",
       AUS:"au",AUT:"at",AZE:"az",BHS:"bs",BHR:"bh",BGD:"bd",BRB:"bb",BLR:"by",
@@ -825,7 +744,6 @@
       return `https://flagcdn.com/${size}/${iso2}.png`;
     }
 
-    // ── Map init ──────────────────────────────────────────────────────
     const map = L.map('map', { zoomControl: true, preferCanvas: true });
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap &copy; CARTO',
@@ -834,6 +752,7 @@
     }).addTo(map);
 
     // ── State ────────────────────────────────────────────────────────
+    // Only active players are loaded — inactive ones never enter the dataset
     let allFeatures = [];
     let currentLayer = null;
     const filterState = {
@@ -842,11 +761,9 @@
       club:      '',
       position:  '',
       birth:     '',
-      activeOnly: true,
       search:    '',
     };
 
-    // ── Popup card ──────────────────────────────────────────────────────
     function popupHtml(p) {
       const flag = flagUrl(p.country_iso3);
       const teamLabel = p.national_team ?? p.country_iso3 ?? '';
@@ -878,7 +795,6 @@
         </div>`;
     }
 
-    // ── Marker icons ────────────────────────────────────────────────────
     function fanIcon(players, zoom) {
       const N = players.length;
       const r = Math.min(14, Math.max(5, (zoom - 5) * 1.2));
@@ -901,7 +817,6 @@
       });
     }
 
-    // ── Data fetch ────────────────────────────────────────────────────
     async function fetchAll() {
       let features = [];
       let url = API_URL;
@@ -911,10 +826,10 @@
         features = features.concat(data.results?.features || data.features || []);
         url = data.next || null;
       }
-      return features;
+      // Always restrict to active players — inactive ones are never shown
+      return features.filter(f => f.properties?.is_active !== false);
     }
 
-    // ── Filter logic ────────────────────────────────────────────────────
     function applyFilters(features) {
       const search = filterState.search.trim().toLowerCase();
       return features.filter(f => {
@@ -924,14 +839,12 @@
         if (filterState.club     && p.club               !== filterState.club)     return false;
         if (filterState.position && p.position           !== filterState.position) return false;
         if (filterState.birth    && p.birth_country_iso3 !== filterState.birth)    return false;
-        if (filterState.activeOnly && p.is_active === false) return false;
         if (search && !(p.name ?? '').toLowerCase().includes(search))               return false;
         return true;
       });
     }
 
-    // ── Populate dropdowns ──────────────────────────────────────────────
-    const COUNTRY_NAMES = {};  // iso3 → name
+    const COUNTRY_NAMES = {};
     function populateDropdowns(features) {
       const countries = new Map();
       const clubcomps = new Set();
@@ -995,10 +908,8 @@
       fClub.classList.remove('active');
     }
 
-    // ── Render markers ─────────────────────────────────────────────────
     function render(features) {
       if (currentLayer) map.removeLayer(currentLayer);
-
       const byCoord = {};
       features.forEach(f => {
         if (!f.geometry?.coordinates) return;
@@ -1017,33 +928,28 @@
       });
 
       currentLayer = L.featureGroup(markers).addTo(map);
-
       document.getElementById('player-count').textContent = `${features.length} players`;
       document.getElementById('filter-count').textContent = `${features.length}/${allFeatures.length}`;
     }
 
-    // ── Stats panel ─────────────────────────────────────────────────────
     function updateStats(filtered) {
-      const anyFilter = Object.values(filterState).some(v => v !== '' && v !== true);
+      const anyFilter = Object.values(filterState).some(v => v !== '');
       const statsPanel = document.getElementById('stats-panel');
-
       if (!anyFilter || filtered.length === 0) {
         statsPanel.classList.remove('visible');
         return;
       }
-
       statsPanel.classList.add('visible');
-      document.getElementById('stat-total').textContent  = filtered.length;
+      document.getElementById('stat-total').textContent = filtered.length;
 
-      // Unique birthplaces
       const places = new Set();
-      const compCounts    = {};
+      const compCounts = {};
       const countryCounts = {};
       filtered.forEach(f => {
         const p = f.properties;
         if (p.match_addr) places.add(p.match_addr);
-        if (p.club_competition) compCounts[p.club_competition]    = (compCounts[p.club_competition] ?? 0) + 1;
-        if (p.birth_country)    countryCounts[p.birth_country]    = (countryCounts[p.birth_country] ?? 0) + 1;
+        if (p.club_competition) compCounts[p.club_competition] = (compCounts[p.club_competition] ?? 0) + 1;
+        if (p.birth_country)    countryCounts[p.birth_country] = (countryCounts[p.birth_country] ?? 0) + 1;
       });
       document.getElementById('stat-places').textContent = places.size;
 
@@ -1062,7 +968,6 @@
       renderTop('stat-countries', countryCounts);
     }
 
-    // ── Country panel ──────────────────────────────────────────────────
     function updateCountryPanel() {
       const panel = document.getElementById('country-panel');
       if (!filterState.country) {
@@ -1077,7 +982,6 @@
       panel.classList.add('visible');
     }
 
-    // ── Apply filter changes ────────────────────────────────────────────
     function refresh() {
       const filtered = applyFilters(allFeatures);
       render(filtered);
@@ -1092,7 +996,6 @@
       fCountry.classList.toggle('active', !!iso3);
       filterState.country = iso3;
       refresh();
-      // Close any open popup
       map.closePopup();
     }
 
@@ -1121,11 +1024,6 @@
         });
       });
 
-      document.getElementById('f-active').addEventListener('change', e => {
-        filterState.activeOnly = e.target.checked;
-        refresh();
-      });
-
       document.getElementById('f-search').addEventListener('input', e => {
         filterState.search = e.target.value;
         refresh();
@@ -1139,9 +1037,7 @@
           filterState[key] = '';
         }
         document.getElementById('f-club').disabled = true;
-        document.getElementById('f-active').checked = true;
         document.getElementById('f-search').value = '';
-        filterState.activeOnly = true;
         filterState.search = '';
         refresh();
       });
@@ -1155,7 +1051,6 @@
       });
     }
 
-    // ── Click handler — popup links trigger country filter ─────────────
     document.addEventListener('click', e => {
       const target = e.target.closest('[data-filter-country]');
       if (target) {
@@ -1164,7 +1059,6 @@
       }
     });
 
-    // ── Modals ──────────────────────────────────────────────────────────
     function openModal(id)  { document.getElementById(id).classList.add('visible'); }
     function closeModal(id) { document.getElementById(id).classList.remove('visible'); }
 
@@ -1178,7 +1072,6 @@
       });
     });
 
-    // ── Boot ────────────────────────────────────────────────────────────
     fetchAll().then(features => {
       allFeatures = features;
       populateDropdowns(features);
