@@ -194,7 +194,7 @@
     }
     .reset-btn:hover { color: var(--orange); }
 
-    #stats-panel { display: none; }
+    #stats-panel { display: block; }
     #stats-panel.visible { display: block; }
     .stat-row {
       display: flex;
@@ -935,11 +935,14 @@
     function updateStats(filtered) {
       const anyFilter = Object.values(filterState).some(v => v !== '');
       const statsPanel = document.getElementById('stats-panel');
-      if (!anyFilter || filtered.length === 0) {
-        statsPanel.classList.remove('visible');
-        return;
-      }
+
+      // Always visible — but switch between "world" and "filtered" mode
       statsPanel.classList.add('visible');
+
+      // Update title based on filter state
+      const statsHead = statsPanel.querySelector('.panel-head strong');
+      statsHead.textContent = anyFilter ? 'STATS · FILTERED' : 'STATS · WORLD';
+
       document.getElementById('stat-total').textContent = filtered.length;
 
       const places = new Set();
