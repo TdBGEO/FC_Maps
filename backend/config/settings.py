@@ -35,10 +35,7 @@ ALLOWED_HOSTS = [
     h.strip()
     for h in os.environ.get(
         "DJANGO_ALLOWED_HOSTS",
-        "localhost,127.0.0.1"
-        ".railway.app",
-        "fcmaps.nl",
-        "www.fcmaps.nl",
+        "localhost,127.0.0.1,.railway.app,fcmaps.nl,www.fcmaps.nl"
     ).split(",")
     if h.strip()
 ]
