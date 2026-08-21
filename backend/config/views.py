@@ -50,7 +50,7 @@ class LandingView(TemplateView):
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(
-            page_title="FC Maps — an atlas of professional football",
+            page_title="FC Maps: The football atlas of the world",
             page_url=f"{SITE_URL}/",
             meta_description=(
                 "FC Maps plots where professional footballers were born. "
