@@ -1,0 +1,22 @@
+{% extends "base_map.html" %}
+
+{% comment %}
+  The World Cup map. Everything except the About copy is supplied as context
+  by WorldCupMapView in config/views.py — see base_map.html for the markup.
+{% endcomment %}
+
+{% block about_intro %}
+        <p>
+          <strong>FC Maps</strong> is an interactive atlas of professional football and a product of TdB GEO. This
+          edition focuses on the <strong>FIFA World Cup 2026</strong>, plotting where every player
+          in every qualified national squad was born.
+        </p>
+{% endblock %}
+
+{% block about_project %}
+        <p>
+          <strong>Open project.</strong>  I’m excited to share the first outcome of this project: an atlas of all 14 participating nations in the World Cup that starts tonight.
+          This is only the beginning, there’s much more to come, so stay tuned ☺️ I’d love to hear your thoughts and feedback!The code is open source.
+          All feedback, corrections, and collaborations are welcome.
+        </p>
+{% endblock %}

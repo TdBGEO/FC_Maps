@@ -1,0 +1,24 @@
+{% extends "base_map.html" %}
+
+{% comment %}
+  The Eredivisie 2026/27 map. Same machinery as the World Cup map; the
+  differences (competition code, club-badge markers, single-league filters)
+  are all supplied as context by EredivisieMapView in config/views.py.
+{% endcomment %}
+
+{% block about_intro %}
+        <p>
+          <strong>FC Maps</strong> is an interactive atlas of professional football and a product of TdB GEO. This
+          edition follows the <strong>Eredivisie 2026/27</strong>, plotting where every player in
+          every club squad was born.
+        </p>
+{% endblock %}
+
+{% block about_project %}
+        <p>
+          <strong>Open project.</strong> The Eredivisie atlas is the second map in this project, after
+          the World Cup 2026 edition. Squad data is added once the season is under way, so the map
+          fills in as rosters are confirmed. The code is open source — all feedback, corrections,
+          and collaborations are welcome.
+        </p>
+{% endblock %}

@@ -1,0 +1,12 @@
+# Normalise line endings: LF in the repo, regardless of editor/OS.
+# Without this, editing files from Windows under OneDrive rewrites whole files
+# to CRLF and every diff shows as 100% changed.
+* text=auto eol=lf
+
+# Binary assets — never touch these.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary

@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ page_title }}</title>
+  <link rel="canonical" href="{{ page_url }}">
+
+  <meta property="og:type"        content="website">
+  <meta property="og:title"       content="{{ page_title }}">
+  <meta property="og:description" content="{{ meta_description }}">
+  <meta property="og:url"         content="{{ page_url }}">
+  <meta property="og:site_name"   content="FC Maps">
+
+  <meta name="twitter:card"        content="summary">
+  <meta name="twitter:title"       content="{{ page_title }}">
+  <meta name="twitter:description" content="{{ meta_description }}">
+
+  <meta name="description" content="{{ meta_description }}">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Same tokens as base_map.html — keep the two in step. */
+    :root {
+      --orange:  #E8650A;
+      --ink:     #1a1a1a;
+      --paper:   #f7f4ef;
+      --white:   #ffffff;
+      --rule:    rgba(26,26,26,.12);
+      --muted:   #999;
+      --shadow:  0 2px 16px rgba(26,26,26,.10);
+      --shadow-lg: 0 8px 32px rgba(26,26,26,.18);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      min-height: 100%;
+      font-family: 'Inter', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    .wrap {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 72px 24px 96px;
+    }
+
+    header { border-bottom: 3px solid var(--orange); padding-bottom: 22px; }
+    .brand-title {
+      font-family: 'Anton', sans-serif;
+      font-size: 3.2rem;
+      letter-spacing: .12em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+    .brand-title span { color: var(--orange); }
+    .tagline {
+      margin-top: 12px;
+      font-size: .95rem;
+      color: var(--muted);
+      max-width: 46ch;
+      line-height: 1.6;
+    }
+
+    .maps {
+      margin-top: 36px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+    }
+
+    .map-card {
+      display: block;
+      background: var(--white);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      box-shadow: var(--shadow);
+      padding: 22px 24px 24px;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow .15s, transform .15s;
+    }
+    .map-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+    .map-card .kicker {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .62rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      border-bottom: 2px solid var(--orange);
+    }
+    .map-card .tag {
+      margin-left: auto;
+      color: var(--orange);
+      border: 1px solid var(--orange);
+      border-radius: 2px;
+      padding: 1px 6px;
+      letter-spacing: .08em;
+    }
+    .map-card h2 {
+      font-family: 'Anton', sans-serif;
+      font-size: 1.7rem;
+      font-weight: 400;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+    .map-card p {
+      margin-top: 10px;
+      font-size: .85rem;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+    .map-card .go {
+      display: inline-block;
+      margin-top: 16px;
+      font-family: 'Anton', sans-serif;
+      font-size: .8rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--orange);
+      padding-bottom: 2px;
+    }
+    .map-card:hover .go { color: var(--orange); }
+
+    footer {
+      margin-top: 44px;
+      padding-top: 18px;
+      border-top: 1px solid var(--rule);
+      font-size: .78rem;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+    footer a {
+      color: var(--orange);
+      text-decoration: none;
+      border-bottom: 1px solid var(--orange);
+    }
+    footer a:hover { opacity: .7; }
+
+    @media (max-width: 600px) {
+      .wrap { padding: 44px 18px 64px; }
+      .brand-title { font-size: 2.4rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand-title">FC <span>MAPS</span></div>
+      <p class="tagline">
+        An interactive atlas of professional football!
+      </p>
+    </header>
+
+    <div class="maps">
+      <a class="map-card" href="{% url 'map-worldcup' %}">
+        <div class="kicker">
+          <span>National teams</span>
+          <span class="tag">Live</span>
+        </div>
+        <h2>World Cup 2026</h2>
+        <p>
+          Every player in every qualified squad for the FIFA World Cup 2026,
+          plotted by birthplace. Filter by national team, club competition,
+          club, position and country of birth.
+        </p>
+        <span class="go">Open the map →</span>
+      </a>
+
+      <a class="map-card" href="{% url 'map-eredivisie' %}">
+        <div class="kicker">
+          <span>Club rosters</span>
+          <span class="tag">Data from September</span>
+        </div>
+        <h2>Eredivisie 2026/27</h2>
+        <p>
+          The birthplaces behind all eighteen Eredivisie squads. The map is
+          already live and fills in as the 2026/27 rosters are confirmed.
+        </p>
+        <span class="go">Open the map →</span>
+      </a>
+    </div>
+
+    <footer>
+      FC Maps is a product of TdB GEO. Data comes from publicly available sources; such as Transfermarkt, Wikipedia, and other sports databases. Birthplace coordinates are geocoded with
+      OpenStreetMap Nominatim and corrected by hand where needed.
+      <br>
+      Feedback and corrections are welcome:
+      <a href="mailto:tdbgeo.fcmaps@gmail.com">tdbgeo.fcmaps@gmail.com</a>
+      or <a href="https://github.com/TdBGEO/FC_Maps">github.com/TdBGEO/FC_Maps</a>.
+    </footer>
+  </div>
+</body>
+</html>
