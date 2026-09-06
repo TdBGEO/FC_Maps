@@ -13,6 +13,8 @@ class SquadGeoSerializer(GeoFeatureModelSerializer):
             "date_of_birth",
             "birth_country_iso3",
             "birth_country",
+            "nationality",
+            "nationality_iso3",
             "birthplace_city",
             "match_addr",
             "geom",

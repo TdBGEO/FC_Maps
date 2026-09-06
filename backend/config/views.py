@@ -77,6 +77,9 @@ class BaseMapView(TemplateView):
     entity_panel_label = "COUNTRY"
     stats_group_label = "Top club leagues"
     default_view = (20, 0, 2)  # lat, lng, zoom — used when there is nothing to fit
+    # Club maps add a "top cities of birth" list; on the WC map birthplaces are
+    # spread worldwide and the country list already tells that story.
+    show_city_stats = False
     # Rendered as "{empty_title} {empty_title_accent}", the accent in orange.
     # Kept as two plain strings so the template needs no |safe.
     empty_title = ""
@@ -92,6 +95,7 @@ class BaseMapView(TemplateView):
             "season_label": self.season_label,
             "default_view": list(self.default_view),
             "club_badges": club_badges() if self.marker_mode == "club_badge" else {},
+            "show_city_stats": self.show_city_stats,
             "carto_key": settings.CARTO_BASEMAP_KEY,
         }
 
@@ -155,12 +159,15 @@ class EredivisieMapView(BaseMapView):
     season_label = "EREDIVISIE 2026/27"
     marker_mode = "club_badge"
     # Every row is the same league, so "top club leagues" would be a list of one.
-    stats_group_field = "club"
+    # Club counts are near-uniform (~26 a squad) and say nothing interesting, so
+    # this map ranks nationalities instead.
+    stats_group_field = "nationality"
+    show_city_stats = True
     club_cascade = False
     # Club rosters carry no national team, so that filter has nothing to offer.
     show_country_filter = False
     entity_panel_label = "CLUB"
-    stats_group_label = "Top clubs"
+    stats_group_label = "Top nationalities"
     default_view = (52.15, 5.4, 7)  # the Netherlands
     empty_title = "Squads arrive"
     empty_title_accent = "soon"

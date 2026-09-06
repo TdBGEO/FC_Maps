@@ -11,6 +11,10 @@ class SquadView(models.Model):
     date_of_birth    = models.DateField(null=True, blank=True)
     birth_country_iso3 = models.CharField(max_length=3, null=True, blank=True)
     birth_country    = models.TextField(null=True, blank=True)
+    # Nationality is not birthplace: data.player_nationality is a separate table.
+    # Currently one row per player, so the view collapses it to a single value.
+    nationality      = models.TextField(null=True, blank=True)
+    nationality_iso3 = models.CharField(max_length=3, null=True, blank=True)
     birthplace_city  = models.TextField(null=True, blank=True)
     match_addr       = models.TextField(null=True, blank=True)
     geom             = models.PointField(srid=4326, null=True, blank=True)

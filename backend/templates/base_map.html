@@ -455,6 +455,15 @@
       padding-top: 1px;
     }
     .card-row .value { text-align: right; }
+    /* Small flag sitting inline with a value or a stats line */
+    .flag-inline {
+      width: 16px; height: 12px;
+      object-fit: cover;
+      border: 1px solid var(--rule);
+      flex-shrink: 0;
+      vertical-align: -1px;
+      margin-right: 6px;
+    }
 
     .fan-wrapper {
       position: relative;
@@ -794,6 +803,9 @@
         <div class="stat-bullets" id="stat-comps">
           <div class="stat-head">{{ stats_group_label }}</div>
         </div>
+        <div class="stat-bullets" id="stat-cities">
+          <div class="stat-head">Top cities of birth</div>
+        </div>
         <div class="stat-bullets" id="stat-countries">
           <div class="stat-head">Top countries of birth</div>
         </div>
@@ -924,6 +936,13 @@
       return `https://flagcdn.com/${size}/${iso2}.png`;
     }
 
+    // Nationality flag for the popup. Separate from markerImage(): that picks
+    // the marker (club badge on this map), this is the player's own flag.
+    function natFlagImg(p) {
+      const url = flagUrl(p.nationality_iso3);
+      return url ? `<img class="flag-inline" src="${url}" alt="">` : '';
+    }
+
     // ── Club badges ──────────────────────────────────────────────────
     // CONFIG.club_badges maps a slug ("ajax-amsterdam") to a hashed /static/
     // URL resolved server-side — ManifestStaticFilesStorage renames files at
@@ -1048,6 +1067,11 @@
             <span class="label">Birthplace</span>
             <span class="value">${p.match_addr ?? p.birthplace_city ?? '—'}</span>
           </div>
+          ${CLUB_MODE ? `
+          <div class="card-row">
+            <span class="label">Nationality</span>
+            <span class="value">${natFlagImg(p)}${p.nationality ?? p.nationality_iso3 ?? '—'}</span>
+          </div>` : ''}
           ${CLUB_MODE ? '' : `
           <div class="card-row">
             <span class="label">Club</span>
@@ -1231,29 +1255,50 @@
       const places = new Set();
       const compCounts = {};
       const countryCounts = {};
+      const cityCounts = {};
+      // Label → ISO3, so the nationality list can show a flag next to each row.
+      const groupIso3 = {};
       filtered.forEach(f => {
         const p = f.properties;
         if (p.match_addr) places.add(p.match_addr);
-        // "Top club leagues" is meaningless when every row is the same league,
-        // so single-league maps group by club instead.
+        // "Top club leagues" is meaningless when every row is the same league.
+        // Single-league maps group by nationality, which actually varies.
         const group = p[CONFIG.stats_group_field];
-        if (group)              compCounts[group]             = (compCounts[group] ?? 0) + 1;
-        if (p.birth_country)    countryCounts[p.birth_country] = (countryCounts[p.birth_country] ?? 0) + 1;
+        if (group) {
+          compCounts[group] = (compCounts[group] ?? 0) + 1;
+          if (p.nationality_iso3) groupIso3[group] = p.nationality_iso3;
+        }
+        if (p.birth_country)   countryCounts[p.birth_country]   = (countryCounts[p.birth_country] ?? 0) + 1;
+        if (p.birthplace_city) cityCounts[p.birthplace_city]    = (cityCounts[p.birthplace_city] ?? 0) + 1;
       });
       document.getElementById('stat-places').textContent = places.size;
 
-      const renderTop = (id, counts, max = 5) => {
+      // iconFor is optional: return an <img> string to prefix a row, or ''.
+      const renderTop = (id, counts, max = 5, iconFor = null) => {
         const el = document.getElementById(id);
         const head = el.querySelector('.stat-head');
         el.innerHTML = '';
         el.appendChild(head);
         const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, max);
         sorted.forEach(([name, count]) => {
+          const icon = iconFor ? iconFor(name) : '';
           el.insertAdjacentHTML('beforeend',
-            `<div><span>${name}</span><span class="count">${count}</span></div>`);
+            `<div><span>${icon}${name}</span><span class="count">${count}</span></div>`);
         });
       };
-      renderTop('stat-comps', compCounts);
+
+      const natIcon = name => {
+        const url = flagUrl(groupIso3[name]);
+        return url ? `<img class="flag-inline" src="${url}" alt="">` : '';
+      };
+
+      renderTop('stat-comps', compCounts, 5, natIcon);
+
+      // Only club maps ask for the cities list; elsewhere it stays out of the way.
+      const citiesEl = document.getElementById('stat-cities');
+      citiesEl.style.display = CONFIG.show_city_stats ? '' : 'none';
+      if (CONFIG.show_city_stats) renderTop('stat-cities', cityCounts);
+
       renderTop('stat-countries', countryCounts);
     }
 
