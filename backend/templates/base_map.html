@@ -999,7 +999,12 @@
     }
 
     const map = L.map('map', { zoomControl: true, preferCanvas: true });
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    // The key rides along in the tile URL because CARTO needs it there; it is
+    // public by necessity and domain-locked at CARTO's end. Missing key just
+    // means watermarked tiles, so fall back to the bare URL rather than break.
+    const CARTO_TILES = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+      + (CONFIG.carto_key ? `?key=${encodeURIComponent(CONFIG.carto_key)}` : '');
+    L.tileLayer(CARTO_TILES, {
       attribution: '&copy; OpenStreetMap &copy; CARTO',
       subdomains: 'abcd',
       maxZoom: 20

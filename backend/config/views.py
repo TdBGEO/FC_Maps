@@ -92,6 +92,7 @@ class BaseMapView(TemplateView):
             "season_label": self.season_label,
             "default_view": list(self.default_view),
             "club_badges": club_badges() if self.marker_mode == "club_badge" else {},
+            "carto_key": settings.CARTO_BASEMAP_KEY,
         }
 
     def get_context_data(self, **kwargs):

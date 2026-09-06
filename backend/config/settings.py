@@ -50,6 +50,13 @@ CSRF_TRUSTED_ORIGINS = [
     if o.strip()
 ]
 
+# CARTO basemap tiles. This key is not a secret from visitors — the browser has
+# to send it to basemaps.cartocdn.com to fetch tiles, so it is readable in page
+# source. It lives in the environment to keep it out of git; abuse is prevented
+# by the domain allowlist on the key in the CARTO dashboard. Empty in dev is
+# fine: tiles still load, just watermarked.
+CARTO_BASEMAP_KEY = os.environ.get("CARTO_BASEMAP_KEY", "")
+
 # ---------------------------------------------------------------------------
 # Application definition
 # ---------------------------------------------------------------------------
