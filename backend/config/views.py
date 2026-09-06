@@ -80,9 +80,14 @@ class BaseMapView(TemplateView):
     # Club maps add a "top cities of birth" list; on the WC map birthplaces are
     # spread worldwide and the country list already tells that story.
     show_city_stats = False
-    # Shows a "work in progress" tag beside the season label. Set while a map is
-    # live but still being finished, so visitors know the data may yet change.
+    # Replaces the whole page with a holding screen. Set while a map's data is
+    # in the database but the map itself is not ready to be shown publicly.
+    # Rendered server-side, so the map never appears behind it.
     work_in_progress = False
+    wip_title = "Work in"
+    wip_title_accent = "progress"
+    wip_message = """This map is still being built. It will open here once it
+        is finished."""
     # Rendered as "{empty_title} {empty_title_accent}", the accent in orange.
     # Kept as two plain strings so the template needs no |safe.
     empty_title = ""
@@ -109,6 +114,9 @@ class BaseMapView(TemplateView):
             club_cascade=self.club_cascade,
             show_country_filter=self.show_country_filter,
             work_in_progress=self.work_in_progress,
+            wip_title=self.wip_title,
+            wip_title_accent=self.wip_title_accent,
+            wip_message=self.wip_message,
             entity_panel_label=self.entity_panel_label,
             stats_group_label=self.stats_group_label,
             empty_title=self.empty_title,
@@ -168,6 +176,13 @@ class EredivisieMapView(BaseMapView):
     stats_group_field = "nationality"
     show_city_stats = True
     work_in_progress = True
+    wip_title = "Eredivisie"
+    wip_title_accent = "2026/27"
+    wip_message = (
+        "The squads are in, but this map is not finished yet — a few club "
+        "badges are missing and the filters still need work. It goes live "
+        "here as soon as it is ready."
+    )
     club_cascade = False
     # Club rosters carry no national team, so that filter has nothing to offer.
     show_country_filter = False

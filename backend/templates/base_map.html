@@ -342,18 +342,6 @@
       letter-spacing: .12em;
       color: var(--muted);
     }
-    /* Marks a map as unfinished. Orange because it is a statement about the
-       page, not another piece of metadata like the season or player count. */
-    #panel .wip-tag {
-      font-family: 'Anton', sans-serif;
-      font-size: .68rem;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--orange);
-      border: 1px solid var(--orange);
-      padding: 2px 7px;
-      white-space: nowrap;
-    }
     #panel .divider {
       width: 1px; height: 14px;
       background: var(--rule);
@@ -628,6 +616,67 @@
     }
 
     /* Shown when the API returns zero features (e.g. a season not yet scraped) */
+    /* Holding screen for a map that is live in the database but not ready to
+       be shown. Opaque and above everything, including the loader, so the map
+       never flashes into view behind it. Server-rendered, not JS-toggled:
+       nothing to bypass by blocking a script. */
+    #wip-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: var(--paper);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+    #wip-screen .wip-inner { max-width: 460px; }
+    #wip-screen .wip-brand {
+      font-family: 'Anton', sans-serif;
+      font-size: 1rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 26px;
+    }
+    #wip-screen .wip-brand span { color: var(--orange); }
+    #wip-screen .wip-title {
+      font-family: 'Anton', sans-serif;
+      font-size: 2.1rem;
+      line-height: 1.05;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    #wip-screen .wip-title span { color: var(--orange); }
+    #wip-screen .wip-rule {
+      width: 48px; height: 3px;
+      background: var(--orange);
+      margin: 0 auto 18px;
+    }
+    #wip-screen p {
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.65;
+    }
+    #wip-screen .wip-cta {
+      display: inline-block;
+      margin-top: 24px;
+      font-family: 'Anton', sans-serif;
+      font-size: .82rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 2px solid var(--orange);
+      padding-bottom: 3px;
+    }
+    #wip-screen .wip-cta:hover { color: var(--orange); }
+    @media (max-width: 640px) {
+      #wip-screen .wip-title { font-size: 1.5rem; }
+    }
+
     #empty-state {
       position: fixed;
       inset: 0;
@@ -716,7 +765,6 @@
       #panel .meta { padding: 0 12px; gap: 6px; }
       #panel .season,
       #player-count { font-size: .7rem; }
-      #panel .wip-tag { font-size: .58rem; padding: 1px 5px; }
       #panel .about-link { padding: 0 12px; font-size: .7rem; }
       #panel .nav-link { padding: 0 12px; font-size: .7rem; }
     }
@@ -834,14 +882,22 @@
       <span class="season">{{ season_label }}</span>
       <div class="divider"></div>
       <span id="player-count">Loading…</span>
-      {% if work_in_progress %}
-        <div class="divider"></div>
-        <span class="wip-tag" title="This map is still being completed — data and features may change">Work in progress</span>
-      {% endif %}
     </div>
     <a class="nav-link" href="{% url 'landing' %}">← All maps</a>
     <button class="about-link" id="about-btn">About</button>
   </div>
+
+  {% if work_in_progress %}
+  <div id="wip-screen">
+    <div class="wip-inner">
+      <div class="wip-brand">FC <span>MAPS</span></div>
+      <div class="wip-title">{{ wip_title }} <span>{{ wip_title_accent }}</span></div>
+      <div class="wip-rule"></div>
+      <p>{{ wip_message }}</p>
+      <a class="wip-cta" href="{% url 'map-worldcup' %}">View the World Cup map →</a>
+    </div>
+  </div>
+  {% endif %}
 
   <div id="empty-state">
     <div class="modal">
