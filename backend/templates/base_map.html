@@ -342,6 +342,18 @@
       letter-spacing: .12em;
       color: var(--muted);
     }
+    /* Marks a map as unfinished. Orange because it is a statement about the
+       page, not another piece of metadata like the season or player count. */
+    #panel .wip-tag {
+      font-family: 'Anton', sans-serif;
+      font-size: .68rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--orange);
+      border: 1px solid var(--orange);
+      padding: 2px 7px;
+      white-space: nowrap;
+    }
     #panel .divider {
       width: 1px; height: 14px;
       background: var(--rule);
@@ -704,6 +716,7 @@
       #panel .meta { padding: 0 12px; gap: 6px; }
       #panel .season,
       #player-count { font-size: .7rem; }
+      #panel .wip-tag { font-size: .58rem; padding: 1px 5px; }
       #panel .about-link { padding: 0 12px; font-size: .7rem; }
       #panel .nav-link { padding: 0 12px; font-size: .7rem; }
     }
@@ -821,6 +834,10 @@
       <span class="season">{{ season_label }}</span>
       <div class="divider"></div>
       <span id="player-count">Loading…</span>
+      {% if work_in_progress %}
+        <div class="divider"></div>
+        <span class="wip-tag" title="This map is still being completed — data and features may change">Work in progress</span>
+      {% endif %}
     </div>
     <a class="nav-link" href="{% url 'landing' %}">← All maps</a>
     <button class="about-link" id="about-btn">About</button>

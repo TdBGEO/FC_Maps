@@ -80,6 +80,9 @@ class BaseMapView(TemplateView):
     # Club maps add a "top cities of birth" list; on the WC map birthplaces are
     # spread worldwide and the country list already tells that story.
     show_city_stats = False
+    # Shows a "work in progress" tag beside the season label. Set while a map is
+    # live but still being finished, so visitors know the data may yet change.
+    work_in_progress = False
     # Rendered as "{empty_title} {empty_title_accent}", the accent in orange.
     # Kept as two plain strings so the template needs no |safe.
     empty_title = ""
@@ -105,6 +108,7 @@ class BaseMapView(TemplateView):
             season_label=self.season_label,
             club_cascade=self.club_cascade,
             show_country_filter=self.show_country_filter,
+            work_in_progress=self.work_in_progress,
             entity_panel_label=self.entity_panel_label,
             stats_group_label=self.stats_group_label,
             empty_title=self.empty_title,
@@ -163,6 +167,7 @@ class EredivisieMapView(BaseMapView):
     # this map ranks nationalities instead.
     stats_group_field = "nationality"
     show_city_stats = True
+    work_in_progress = True
     club_cascade = False
     # Club rosters carry no national team, so that filter has nothing to offer.
     show_country_filter = False
