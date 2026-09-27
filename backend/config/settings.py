@@ -57,6 +57,12 @@ CSRF_TRUSTED_ORIGINS = [
 # fine: tiles still load, just watermarked.
 CARTO_BASEMAP_KEY = os.environ.get("CARTO_BASEMAP_KEY", "")
 
+# The Eredivisie holding screen. It follows DEBUG: never shown while developing,
+# always shown in production, so the unfinished map cannot leak to visitors no
+# matter what is committed. ERE_WIP overrides it either way — set ERE_WIP=True
+# locally to check how the holding screen itself looks.
+EREDIVISIE_WIP = os.environ.get("ERE_WIP", "False" if DEBUG else "True") == "True"
+
 # ---------------------------------------------------------------------------
 # Application definition
 # ---------------------------------------------------------------------------

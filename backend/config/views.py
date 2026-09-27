@@ -175,7 +175,7 @@ class EredivisieMapView(BaseMapView):
     # this map ranks nationalities instead.
     stats_group_field = "nationality"
     show_city_stats = True
-    work_in_progress = True
+    work_in_progress = settings.EREDIVISIE_WIP
     wip_title = "Eredivisie"
     wip_title_accent = "2026/27"
     wip_message = (
